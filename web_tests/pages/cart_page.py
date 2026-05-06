@@ -4,15 +4,16 @@ from selenium.webdriver.support import expected_conditions as EC
 from web_tests.pages.base_page import BasePage
 
 class CartPage(BasePage):
-    _CART_CONTAINER = (By.CLASS_NAME, "cart_contents_container")
-    _CART_ITEMS     = (By.CLASS_NAME, "cart_item")
-    _ITEM_NAMES     = (By.CLASS_NAME, "inventory_item_name")
-    _CHECKOUT_BTN   = (By.ID, "checkout")
-    _REMOVE_BTN     = (By.XPATH, "//button[contains(@id,'remove')]")
+    _CART_ITEMS   = (By.CLASS_NAME, "cart_item")
+    _ITEM_NAMES   = (By.CLASS_NAME, "inventory_item_name")
+    _CHECKOUT_BTN = (By.ID, "checkout")
+    _REMOVE_BTN   = (By.XPATH, "//button[contains(@id,'remove')]")
+    _PAGE_TITLE   = (By.CLASS_NAME, "title")
 
     def _wait_for_page(self):
-        self.wait.until(EC.presence_of_element_located(self._CART_CONTAINER))
-        time.sleep(0.5)
+        self.wait.until(EC.url_contains("cart"))
+        self.wait.until(EC.presence_of_element_located(self._PAGE_TITLE))
+        time.sleep(1)
 
     def get_cart_items(self):
         self._wait_for_page()
