@@ -14,15 +14,22 @@ class CheckoutPage(BasePage):
     _COMPLETE_HEADER = (By.CLASS_NAME, "complete-header")
     _PAGE_TITLE      = (By.CLASS_NAME, "title")
 
-    def _wait_for_page(self):
-        self.wait.until(EC.presence_of_element_located(self._PAGE_TITLE))
+    def _wait_for_step_one(self):
+        self.wait.until(EC.presence_of_element_located(self._FIRST_NAME))
+        time.sleep(1)
+
+    def _wait_for_step_two(self):
+        self.wait.until(EC.presence_of_element_located(self._FINISH_BTN))
         time.sleep(1)
 
     def fill_personal_info(self, first_name, last_name, postal_code):
-        self._wait_for_page()
-        self._type(self._FIRST_NAME, first_name)
-        self._type(self._LAST_NAME, last_name)
-        self._type(self._POSTAL_CODE, postal_code)
+        self._wait_for_step_one()
+        field = self.wait.until(EC.element_to_be_clickable(self._FIRST_NAME))
+        self.driver.execute_script("arguments[0].value = arguments[1];", field, first_name)
+        field = self.wait.until(EC.element_to_be_clickable(self._LAST_NAME))
+        self.driver.execute_script("arguments[0].value = arguments[1];", field, last_name)
+        field = self.wait.until(EC.element_to_be_clickable(self._POSTAL_CODE))
+        self.driver.execute_script("arguments[0].value = arguments[1];", field, postal_code)
         return self
 
     def continue_to_step_two(self):
@@ -45,11 +52,8 @@ class CheckoutPage(BasePage):
         return self.driver.find_elements(*self._SUMMARY_ITEMS)
 
     def finish_purchase(self):
-        try:
-            element = self.wait.until(EC.presence_of_element_located(self._FINISH_BTN))
-        except Exception:
-            time.sleep(3)
-            element = self.driver.find_element(*self._FINISH_BTN)
+        self._wait_for_step_two()
+        element = self.driver.find_element(*self._FINISH_BTN)
         self.driver.execute_script("arguments[0].click();", element)
         time.sleep(2)
         return self
