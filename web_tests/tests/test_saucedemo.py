@@ -82,7 +82,7 @@ class TestCheckoutE2E:
         inventory.go_to_cart()
         CartPage(logged_in_driver).proceed_to_checkout()
         checkout = CheckoutPage(logged_in_driver)
-        checkout.fill_personal_info("João", "Silva", "64000-000")
+        checkout.fill_personal_info("Joao", "Silva", "64000-000")
         checkout.continue_to_step_two()
         assert len(checkout.get_summary_items()) == 1
         checkout.finish_purchase()
