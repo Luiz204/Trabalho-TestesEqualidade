@@ -25,8 +25,13 @@ class InventoryPage(BasePage):
             return 0
 
     def add_product_by_slug(self, slug):
+        current_count = self.get_cart_count()
         locator = (By.ID, f"add-to-cart-{slug}")
         self._click(locator)
+        # Espera o badge atualizar para confirmar que o produto foi adicionado
+        self.wait.until(
+            lambda d: self.get_cart_count() == current_count + 1
+        )
         return self
 
     def go_to_cart(self):
