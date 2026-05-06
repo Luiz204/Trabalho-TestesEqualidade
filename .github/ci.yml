@@ -1,0 +1,65 @@
+name: QA Automation — CI Pipeline
+
+on:
+  push:
+    branches: ["main", "develop"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  api-tests:
+    name: "API Tests — Petstore"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+      - run: pip install -r requirements.txt
+      - run: |
+          pytest api_tests/tests/ -v --tb=short \
+            --html=reports/api-report.html --self-contained-html
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: api-test-report
+          path: reports/api-report.html
+
+  web-tests:
+    name: "Web E2E Tests — SauceDemo"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+      - run: pip install -r requirements.txt
+      - uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+      - uses: nanasess/setup-chromedriver@v2
+      - run: |
+          pytest web_tests/tests/ -v --tb=short \
+            --html=reports/web-report.html --self-contained-html
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: web-test-report
+          path: reports/web-report.html
+
+  report:
+    name: "Relatório Consolidado"
+    needs: [api-tests, web-tests]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Resumo
+        run: |
+          echo "## Pipeline QA Automation" >> $GITHUB_STEP_SUMMARY
+          echo "| Suite | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| API Tests | ${{ needs.api-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Web E2E   | ${{ needs.web-tests.result }} |" >> $GITHUB_STEP_SUMMARY
