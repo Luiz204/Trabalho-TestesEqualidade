@@ -13,7 +13,6 @@ class CheckoutPage(BasePage):
     _SUMMARY_ITEMS   = (By.CLASS_NAME, "cart_item")
     _COMPLETE_HEADER = (By.CLASS_NAME, "complete-header")
     _PAGE_TITLE      = (By.CLASS_NAME, "title")
-    _OVERVIEW_URL    = "checkout-step-two"
 
     def _wait_for_page(self):
         self.wait.until(EC.presence_of_element_located(self._PAGE_TITLE))
@@ -29,10 +28,7 @@ class CheckoutPage(BasePage):
     def continue_to_step_two(self):
         element = self.wait.until(EC.presence_of_element_located(self._CONTINUE_BTN))
         self.driver.execute_script("arguments[0].click();", element)
-        try:
-            self.wait.until(EC.url_contains(self._OVERVIEW_URL))
-        except Exception:
-            time.sleep(3)
+        time.sleep(3)
         return self
 
     def get_error_message(self):
@@ -49,8 +45,13 @@ class CheckoutPage(BasePage):
         return self.driver.find_elements(*self._SUMMARY_ITEMS)
 
     def finish_purchase(self):
-        element = self.wait.until(EC.presence_of_element_located(self._FINISH_BTN))
+        try:
+            element = self.wait.until(EC.presence_of_element_located(self._FINISH_BTN))
+        except Exception:
+            time.sleep(3)
+            element = self.driver.find_element(*self._FINISH_BTN)
         self.driver.execute_script("arguments[0].click();", element)
+        time.sleep(2)
         return self
 
     def get_confirmation_header(self):
