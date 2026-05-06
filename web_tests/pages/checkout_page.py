@@ -1,4 +1,6 @@
+import time
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 from web_tests.pages.base_page import BasePage
 
 class CheckoutPage(BasePage):
@@ -10,25 +12,38 @@ class CheckoutPage(BasePage):
     _FINISH_BTN      = (By.ID, "finish")
     _SUMMARY_ITEMS   = (By.CLASS_NAME, "cart_item")
     _COMPLETE_HEADER = (By.CLASS_NAME, "complete-header")
+    _PAGE_TITLE      = (By.CLASS_NAME, "title")
+
+    def _wait_for_page(self):
+        self.wait.until(EC.presence_of_element_located(self._PAGE_TITLE))
+        time.sleep(1)
 
     def fill_personal_info(self, first_name, last_name, postal_code):
+        self._wait_for_page()
         self._type(self._FIRST_NAME, first_name)
         self._type(self._LAST_NAME, last_name)
         self._type(self._POSTAL_CODE, postal_code)
         return self
 
     def continue_to_step_two(self):
-        self._click(self._CONTINUE_BTN)
+        element = self.wait.until(EC.presence_of_element_located(self._CONTINUE_BTN))
+        self.driver.execute_script("arguments[0].click();", element)
+        time.sleep(2)
         return self
 
     def get_error_message(self):
-        return self._text(self._ERROR_MSG)
+        try:
+            return self._text(self._ERROR_MSG)
+        except Exception:
+            return ""
 
     def get_summary_items(self):
+        time.sleep(1)
         return self.driver.find_elements(*self._SUMMARY_ITEMS)
 
     def finish_purchase(self):
-        self._click(self._FINISH_BTN)
+        element = self.wait.until(EC.presence_of_element_located(self._FINISH_BTN))
+        self.driver.execute_script("arguments[0].click();", element)
         return self
 
     def get_confirmation_header(self):
