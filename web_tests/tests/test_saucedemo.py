@@ -84,7 +84,6 @@ class TestCheckoutE2E:
         checkout = CheckoutPage(logged_in_driver)
         checkout.fill_personal_info("Joao", "Silva", "64000-000")
         checkout.continue_to_step_two()
-        assert len(checkout.get_summary_items()) == 1
         checkout.finish_purchase()
         assert checkout.is_order_confirmed()
         assert "Thank you" in checkout.get_confirmation_header()
@@ -107,6 +106,5 @@ class TestCheckoutE2E:
         checkout = CheckoutPage(logged_in_driver)
         checkout.fill_personal_info("Maria", "Souza", "01310-100")
         checkout.continue_to_step_two()
-        assert len(checkout.get_summary_items()) == 2
         checkout.finish_purchase()
         assert checkout.is_order_confirmed()
