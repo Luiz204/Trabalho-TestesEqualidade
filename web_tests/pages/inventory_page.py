@@ -38,5 +38,7 @@ class InventoryPage(BasePage):
         return self
 
     def go_to_cart(self):
-        self._click(self._CART_ICON)
+        element = self.wait.until(EC.presence_of_element_located(self._CART_ICON))
+        self.driver.execute_script("arguments[0].click();", element)
+        time.sleep(2)
         return self

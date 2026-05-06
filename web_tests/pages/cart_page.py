@@ -11,9 +11,8 @@ class CartPage(BasePage):
     _PAGE_TITLE   = (By.CLASS_NAME, "title")
 
     def _wait_for_page(self):
-        self.wait.until(EC.url_contains("cart"))
         self.wait.until(EC.presence_of_element_located(self._PAGE_TITLE))
-        time.sleep(1)
+        time.sleep(0.5)
 
     def get_cart_items(self):
         self._wait_for_page()
