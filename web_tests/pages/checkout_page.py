@@ -28,7 +28,7 @@ class CheckoutPage(BasePage):
     def continue_to_step_two(self):
         element = self.wait.until(EC.presence_of_element_located(self._CONTINUE_BTN))
         self.driver.execute_script("arguments[0].click();", element)
-        time.sleep(2)
+        time.sleep(3)
         return self
 
     def get_error_message(self):
@@ -38,7 +38,10 @@ class CheckoutPage(BasePage):
             return ""
 
     def get_summary_items(self):
-        time.sleep(1)
+        try:
+            self.wait.until(EC.presence_of_element_located(self._SUMMARY_ITEMS))
+        except Exception:
+            pass
         return self.driver.find_elements(*self._SUMMARY_ITEMS)
 
     def finish_purchase(self):
