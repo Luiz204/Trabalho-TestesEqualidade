@@ -33,13 +33,14 @@ jobs:
           cache: "pip"
       - name: Instalar dependencias
         run: pip install -r requirements.txt
-      - name: Instalar Chrome e ChromeDriver
+      - name: Instalar Chrome
         run: |
           sudo apt-get update
           sudo apt-get install -y chromium-browser chromium-chromedriver
-          chromedriver --version
+          which chromium-browser
           chromium-browser --version
       - name: Rodar testes Web
-        run: |
-          export PATH="/usr/lib/chromium-browser:$PATH"
-          pytest web_tests/tests/ -v --tb=short
+        run: pytest web_tests/tests/ -v --tb=short
+        env:
+          CHROME_BINARY: /usr/bin/chromium-browser
+          CHROMEDRIVER_PATH: /usr/bin/chromedriver

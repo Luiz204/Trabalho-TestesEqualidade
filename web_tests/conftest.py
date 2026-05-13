@@ -1,4 +1,5 @@
 import pytest
+import os
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -6,7 +7,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from web_tests.pages.login_page import LoginPage
 import time
-import shutil
 
 VALID_USER     = "standard_user"
 VALID_PASSWORD = "secret_sauce"
@@ -29,14 +29,18 @@ def driver():
     })
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
 
-    # Detecta automaticamente o binario do Chrome/Chromium
-    chrome_binary = shutil.which("google-chrome") or \
-                    shutil.which("chromium-browser") or \
-                    shutil.which("chromium")
+    chrome_binary = os.environ.get("CHROME_BINARY")
+    chromedriver_path = os.environ.get("CHROMEDRIVER_PATH")
+
     if chrome_binary:
         options.binary_location = chrome_binary
 
-    browser = webdriver.Chrome(options=options)
+    if chromedriver_path:
+        service = Service(executable_path=chromedriver_path)
+    else:
+        service = Service()
+
+    browser = webdriver.Chrome(service=service, options=options)
     browser.set_page_load_timeout(30)
     yield browser
     browser.quit()
