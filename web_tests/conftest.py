@@ -4,7 +4,6 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
 from web_tests.pages.login_page import LoginPage
 import time
 
@@ -28,8 +27,7 @@ def driver():
         "profile.password_manager_leak_detection": False
     })
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    service = Service(ChromeDriverManager().install())
-    browser = webdriver.Chrome(service=service, options=options)
+    browser = webdriver.Chrome(options=options)
     browser.set_page_load_timeout(30)
     yield browser
     browser.quit()
