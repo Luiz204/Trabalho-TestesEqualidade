@@ -4,6 +4,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
 from web_tests.pages.login_page import LoginPage
 import time
 
@@ -13,6 +14,7 @@ VALID_PASSWORD = "secret_sauce"
 @pytest.fixture(scope="function")
 def driver():
     options = Options()
+    options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--window-size=1920,1080")
@@ -26,7 +28,8 @@ def driver():
         "profile.password_manager_leak_detection": False
     })
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    browser = webdriver.Chrome(service=Service(), options=options)
+    service = Service(ChromeDriverManager().install())
+    browser = webdriver.Chrome(service=service, options=options)
     browser.set_page_load_timeout(30)
     yield browser
     browser.quit()
