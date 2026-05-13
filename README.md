@@ -107,5 +107,5 @@ Etapas:
 
 ## Autor
 
-Seu Nome
-Curso de QA
+Luiz Guilherme Aguiar de Almeida
+Trabalho QA
