@@ -1,58 +1,41 @@
-import time
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from web_tests.pages.base_page import BasePage
+import time
 
 class CheckoutPage(BasePage):
     _FIRST_NAME      = (By.ID, "first-name")
     _LAST_NAME       = (By.ID, "last-name")
     _POSTAL_CODE     = (By.ID, "postal-code")
-    _CONTINUE_BTN    = (By.ID, "continue")
+    _CONTINUE_BTN    = (By.CSS_SELECTOR, "input[data-test='continue']")
     _ERROR_MSG       = (By.CSS_SELECTOR, "[data-test='error']")
-    _FINISH_BTN      = (By.ID, "finish")
+    _FINISH_BTN      = (By.CSS_SELECTOR, "button[data-test='finish']")
     _SUMMARY_ITEMS   = (By.CLASS_NAME, "cart_item")
     _COMPLETE_HEADER = (By.CLASS_NAME, "complete-header")
-    _PAGE_TITLE      = (By.CLASS_NAME, "title")
-
-    def _fill_field(self, locator, value):
-        field = self.wait.until(EC.element_to_be_clickable(locator))
-        self.driver.execute_script("arguments[0].click();", field)
-        field.clear()
-        field.send_keys(value)
-        time.sleep(0.3)
 
     def fill_personal_info(self, first_name, last_name, postal_code):
-        self.wait.until(EC.presence_of_element_located(self._FIRST_NAME))
+        self.wait.until(EC.presence_of_element_located(self._FIRST_NAME)).send_keys(first_name)
+        self.driver.find_element(*self._LAST_NAME).send_keys(last_name)
+        self.driver.find_element(*self._POSTAL_CODE).send_keys(postal_code)
         time.sleep(1)
-        self._fill_field(self._FIRST_NAME, first_name)
-        self._fill_field(self._LAST_NAME, last_name)
-        self._fill_field(self._POSTAL_CODE, postal_code)
         return self
 
     def continue_to_step_two(self):
-        element = self.wait.until(EC.element_to_be_clickable(self._CONTINUE_BTN))
-        self.driver.execute_script("arguments[0].click();", element)
-        time.sleep(4)
+        btn = self.wait.until(EC.element_to_be_clickable(self._CONTINUE_BTN))
+        self.driver.execute_script("arguments[0].click();", btn)
+        time.sleep(2)
         return self
 
     def get_error_message(self):
-        try:
-            return self._text(self._ERROR_MSG)
-        except Exception:
-            return ""
+        return self._text(self._ERROR_MSG)
 
     def get_summary_items(self):
-        try:
-            self.wait.until(EC.presence_of_all_elements_located(self._SUMMARY_ITEMS))
-        except Exception:
-            time.sleep(2)
+        self.wait.until(EC.presence_of_all_elements_located(self._SUMMARY_ITEMS))
         return self.driver.find_elements(*self._SUMMARY_ITEMS)
 
     def finish_purchase(self):
-        self.wait.until(EC.presence_of_element_located(self._FINISH_BTN))
-        element = self.driver.find_element(*self._FINISH_BTN)
-        self.driver.execute_script("arguments[0].click();", element)
+        btn = self.wait.until(EC.element_to_be_clickable(self._FINISH_BTN))
+        self.driver.execute_script("arguments[0].click();", btn)
         time.sleep(2)
         return self
 
